@@ -1,12 +1,28 @@
 'use strict';
 
-const apiKey = "eVHuMPUDcP6aP0htAUcURBYWGb092xhvs7wbexXw";
+const api_key = "eVHuMPUDcP6aP0htAUcURBYWGb092xhvs7wbexXw";
 
-function getParks(state, maxResults) {
-    fetch('https://developer.nps.gov/api/v1/parks?stateCode='+state+'&api_key='+apiKey+'&limit='+maxResults)
+function formatQueryParams(params) {
+    const queryItems = Object.keys(params)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+    return queryItems.join('&');
+  }
+ 
+
+function getParks(stateCode, limit) {
+    const params = {
+        stateCode,
+        api_key,
+        limit
+    }
+    fetch('https://developer.nps.gov/api/v1/parks?'+formatQueryParams(params))
         .then(response => response.json())
         .then(responseJson => displayResults(responseJson))
         .catch(error => alert('Something went wrong. Try again later.'));
+
+    // Old method below, required different variable labels!!
+    //fetch('https://developer.nps.gov/api/v1/parks?stateCode=' + state + '&api_key=' + apiKey + '&limit=' + maxResults)
+
 }
 
 function displayResults(responseJson) {
@@ -21,7 +37,8 @@ function displayResults(responseJson) {
             $("ul").append(`<li> Park Name: ${responseJson.data[i].fullName} <br> Description: ${responseJson.data[i].description} <br> URL: ${responseJson.data[i].url}</li>`)
         }
     }
-
+    //unhide class
+    $('#results').removeClass('hidden');
 }
 
 function watchForm() {
